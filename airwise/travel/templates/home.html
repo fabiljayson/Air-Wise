@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}GoTravel - Find the Best Flight Price{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style_home.css' %}">
+{% endblock %}
+
+{% block content %}
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <p class="hero-subtitle">Welcome to GoTravel</p>
+                <h1 class="hero-title">Find the Ideal Flight Price</h1>
+                <p>Predict airline prices using AI-powered data and never overpay for your flights again.</p>
+                <div class="hero-btns">
+                    {% if is_logged_in %}
+                        <a href="#booking" class="btn">Search Flights</a>
+                    {% else %}
+                        <a href="{% url 'connection' %}" class="btn">Get Started</a>
+                    {% endif %}
+                    <a href="{% url 'about' %}" class="btn btn-outline">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% if messages %}
+    <div style="max-width:800px;margin:20px auto 0;padding:0 15px;">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" style="padding:12px 20px;border-radius:8px;margin-bottom:10px;
+                {% if message.tags == 'success' %}background:#d4edda;color:#155724;border:1px solid #28a745;
+                {% elif message.tags == 'error' %}background:#f8d7da;color:#721c24;border:1px solid #dc3545;
+                {% elif message.tags == 'warning' %}background:#fff3cd;color:#856404;border:1px solid #ffc107;
+                {% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if is_logged_in %}
+        <div class="welcome-banner">
+            <i class="fas fa-user-circle"></i> Welcome back, <strong>{{ utilisateur.nomComplet }}</strong>! Ready to search flights?
+        </div>
+
+        <div class="container">
+            <div class="booking-form-container" id="booking">
+                <form id="searchForm" method="post" action="{% url 'search_flights' %}">
+                    {% csrf_token %}
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="departure"><i class="fas fa-plane-departure"></i> Departure</label>
+                            <input list="airports-departure" id="departure" name="departure" placeholder="e.g. CDG - Paris" required>
+                            <datalist id="airports-departure"></datalist>
+                        </div>
+                        <div class="form-group">
+                            <label for="destination"><i class="fas fa-plane-arrival"></i> Destination</label>
+                            <input list="airports-arrival" id="destination" name="destination" placeholder="e.g. DLA - Douala" required>
+                            <datalist id="airports-arrival"></datalist>
+                        </div>
+                        <div class="form-group">
+                            <label for="departure_date"><i class="fas fa-calendar"></i> Departure Date</label>
+                            <input type="date" id="departure_date" name="departure_date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="passagers"><i class="fas fa-users"></i> Passengers</label>
+                            <div class="children-slider-container">
+                                <input type="range" id="passagers-slider" class="children-slider" min="1" max="9" value="1" step="1">
+                                <div class="children-value" id="passagers-value">1 Passenger</div>
+                                <input type="hidden" id="passagers" name="passagers" value="1">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="children"><i class="fas fa-child"></i> Children</label>
+                            <div class="children-slider-container">
+                                <input type="range" id="children-slider" class="children-slider" min="0" max="9" value="0" step="1">
+                                <div class="children-value" id="children-value">0 Children</div>
+                                <input type="hidden" id="children" name="children" value="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="flight-class"><i class="fas fa-chair"></i> Class</label>
+                            <select id="flight-class" name="flight-class">
+                                <option value="economique">Economy</option>
+                                <option value="business">Business</option>
+                                <option value="premiere">First Class</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <button type="submit" class="btn btn-search" id="searchBtn">
+                                <span class="btn-text"><i class="fas fa-search"></i> Search Flights</span>
+                                <span class="spinner"></span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="card">
+                    <h2><i class="fas fa-chart-line"></i> Price Estimation</h2>
+                    <table style="width:100%;border-collapse:collapse;">
+                        <tr style="border-bottom:1px solid #eee;">
+                            <td style="padding:10px;"><i class="fas fa-calendar-alt"></i> Peak season (holidays)</td>
+                            <td style="padding:10px;color:#888;">+15% (high demand)</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #eee;">
+                            <td style="padding:10px;">
+                                <div class="weather-container">
+                                    <h3 style="font-size:1rem;margin-bottom:8px;"><i class="fas fa-cloud-sun"></i> Weather in <span id="weather-city">--</span></h3>
+                                    <div class="weather-info" style="display:none;">
+                                        <div class="weather-display">
+                                            <img class="weather-img" src="" alt="Weather" width="45" height="45">
+                                            <div class="weather-details">
+                                                <p><strong><span class="weather-temp"></span></strong></p>
+                                                <p><span class="weather-condition"></span></p>
+                                                <p><i class="fas fa-wind"></i> <span class="wind"></span> | <i class="fas fa-tint"></i> <span class="humidity"></span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="weather-message">Enter a destination to see weather.</p>
+                                    <p class="weather-error" style="display:none;">Unable to load weather data.</p>
+                                </div>
+                            </td>
+                            <td style="padding:10px;color:#888;" id="weather-impact">+0%</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #eee;">
+                            <td style="padding:10px;"><i class="fas fa-clock"></i> Book 3 months early</td>
+                            <td style="padding:10px;color:#888;">-20% (early bird rate)</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:10px;"><i class="fas fa-calendar-day"></i> Saturday departure</td>
+                            <td style="padding:10px;color:#888;">+5% (weekend peak)</td>
+                        </tr>
+                    </table>
+                    <div class="price"><i class="fas fa-calculator"></i> Estimated: <span id="final-price">340</span>&euro;</div>
+                </div>
+                <script src="{% static 'js/weather.js' %}"></script>
+            </div>
+        </div>
+
+    {% else %}
+        <div class="login-prompt">
+            <i class="fas fa-plane-departure"></i>
+            <h2>Ready to Find Your Flight?</h2>
+            <p>Log in or create an account to access our AI-powered flight search, price predictions, and real-time weather insights.</p>
+            <div class="btn-group">
+                <a href="{% url 'connection' %}" class="btn"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="{% url 'connection' %}" class="btn btn-outline" style="border-color:var(--primary);color:var(--primary);">
+                    <i class="fas fa-user-plus"></i> Register
+                </a>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    {% if is_logged_in %}
+    const passagersSlider = document.getElementById('passagers-slider');
+    const passagersValue = document.getElementById('passagers-value');
+    const passagersInput = document.getElementById('passagers');
+    passagersValue.textContent = '1 Passenger';
+    passagersSlider.addEventListener('input', function() {
+        passagersValue.textContent = this.value + (this.value == 1 ? ' Passenger' : ' Passengers');
+        passagersInput.value = this.value;
+    });
+
+    const childrenSlider = document.getElementById('children-slider');
+    const childrenValue = document.getElementById('children-value');
+    const childrenInput = document.getElementById('children');
+    childrenSlider.addEventListener('input', function() {
+        childrenValue.textContent = this.value + (this.value == 1 ? ' Child' : ' Children');
+        childrenInput.value = this.value;
+    });
+
+    const airports = [
+        {code:"DLA",name:"Douala International",city:"Douala",country:"Cameroon"},
+        {code:"YAO",name:"Yaoundé-Nsimalen",city:"Yaoundé",country:"Cameroon"},
+        {code:"GOU",name:"Garoua",city:"Garoua",country:"Cameroon"},
+        {code:"BFX",name:"Bafoussam",city:"Bafoussam",country:"Cameroon"},
+        {code:"BPC",name:"Bamenda",city:"Bamenda",country:"Cameroon"},
+        {code:"MVR",name:"Maroua-Salak",city:"Maroua",country:"Cameroon"},
+        {code:"NGE",name:"N'Gaoundéré",city:"N'Gaoundéré",country:"Cameroon"},
+        {code:"TKC",name:"Tiko",city:"Tiko",country:"Cameroon"},
+        {code:"CDG",name:"Charles de Gaulle",city:"Paris",country:"France"},
+        {code:"ORY",name:"Orly",city:"Paris",country:"France"},
+        {code:"NCE",name:"Côte d'Azur",city:"Nice",country:"France"},
+        {code:"MRS",name:"Marseille Provence",city:"Marseille",country:"France"},
+        {code:"LYS",name:"Saint-Exupéry",city:"Lyon",country:"France"},
+        {code:"TLS",name:"Toulouse-Blagnac",city:"Toulouse",country:"France"},
+        {code:"JFK",name:"John F. Kennedy",city:"New York",country:"USA"},
+        {code:"LAX",name:"Los Angeles Intl",city:"Los Angeles",country:"USA"},
+        {code:"ORD",name:"O'Hare",city:"Chicago",country:"USA"},
+        {code:"MIA",name:"Miami International",city:"Miami",country:"USA"},
+        {code:"SFO",name:"San Francisco",city:"San Francisco",country:"USA"},
+        {code:"ATL",name:"Hartsfield-Jackson",city:"Atlanta",country:"USA"},
+        {code:"DFW",name:"Dallas/Fort Worth",city:"Dallas",country:"USA"},
+        {code:"LHR",name:"Heathrow",city:"London",country:"UK"},
+        {code:"LGW",name:"Gatwick",city:"London",country:"UK"},
+        {code:"MAN",name:"Manchester",city:"Manchester",country:"UK"},
+        {code:"DXB",name:"Dubai International",city:"Dubai",country:"UAE"},
+        {code:"SIN",name:"Changi",city:"Singapore",country:"Singapore"},
+        {code:"ICN",name:"Incheon",city:"Seoul",country:"South Korea"},
+        {code:"FRA",name:"Frankfurt",city:"Frankfurt",country:"Germany"},
+        {code:"MUC",name:"Munich",city:"Munich",country:"Germany"},
+        {code:"AMS",name:"Schiphol",city:"Amsterdam",country:"Netherlands"},
+        {code:"MAD",name:"Barajas",city:"Madrid",country:"Spain"},
+        {code:"BCN",name:"El Prat",city:"Barcelona",country:"Spain"},
+        {code:"FCO",name:"Fiumicino",city:"Rome",country:"Italy"},
+        {code:"MXP",name:"Malpensa",city:"Milan",country:"Italy"},
+        {code:"IST",name:"Istanbul",city:"Istanbul",country:"Turkey"},
+        {code:"PEK",name:"Capital",city:"Beijing",country:"China"},
+        {code:"PVG",name:"Pudong",city:"Shanghai",country:"China"},
+        {code:"HKG",name:"Hong Kong",city:"Hong Kong",country:"China"},
+        {code:"HND",name:"Haneda",city:"Tokyo",country:"Japan"},
+        {code:"NRT",name:"Narita",city:"Tokyo",country:"Japan"},
+        {code:"SYD",name:"Kingsford Smith",city:"Sydney",country:"Australia"},
+        {code:"MEL",name:"Tullamarine",city:"Melbourne",country:"Australia"},
+        {code:"YYZ",name:"Pearson",city:"Toronto",country:"Canada"},
+        {code:"YUL",name:"Pierre Elliott Trudeau",city:"Montreal",country:"Canada"},
+        {code:"GRU",name:"Guarulhos",city:"São Paulo",country:"Brazil"},
+        {code:"DOH",name:"Hamad",city:"Doha",country:"Qatar"},
+        {code:"BKK",name:"Suvarnabhumi",city:"Bangkok",country:"Thailand"},
+        {code:"DEL",name:"Indira Gandhi",city:"Delhi",country:"India"},
+        {code:"BOM",name:"Chhatrapati Shivaji",city:"Mumbai",country:"India"},
+        {code:"JNB",name:"OR Tambo",city:"Johannesburg",country:"South Africa"},
+        {code:"CPT",name:"Cape Town International",city:"Cape Town",country:"South Africa"},
+        {code:"CAI",name:"Cairo International",city:"Cairo",country:"Egypt"},
+        {code:"CMN",name:"Mohammed V",city:"Casablanca",country:"Morocco"},
+        {code:"TUN",name:"Carthage",city:"Tunis",country:"Tunisia"},
+        {code:"ALG",name:"Houari Boumediene",city:"Algiers",country:"Algeria"},
+        {code:"LOS",name:"Murtala Muhammed",city:"Lagos",country:"Nigeria"},
+        {code:"ABV",name:"Nnamdi Azikiwe",city:"Abuja",country:"Nigeria"},
+        {code:"NBO",name:"Jomo Kenyatta",city:"Nairobi",country:"Kenya"},
+        {code:"DKR",name:"Léopold Sédar Senghor",city:"Dakar",country:"Senegal"},
+        {code:"ADD",name:"Bole International",city:"Addis Ababa",country:"Ethiopia"},
+        {code:"KRT",name:"Khartoum International",city:"Khartoum",country:"Sudan"},
+        {code:"DSS",name:"Blaise Diagne",city:"Dakar",country:"Senegal"},
+    ];
+
+    function populateAirports() {
+        const dep = document.getElementById('airports-departure');
+        const arr = document.getElementById('airports-arrival');
+        dep.innerHTML = '';
+        arr.innerHTML = '';
+        airports.forEach(a => {
+            const text = `${a.code} - ${a.name} - ${a.city}, ${a.country}`;
+            dep.appendChild(Object.assign(document.createElement('option'), {value: text}));
+            arr.appendChild(Object.assign(document.createElement('option'), {value: text}));
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', populateAirports);
+    document.getElementById('searchBtn').addEventListener('click', function() {
+        this.classList.add('loading');
+    });
+    {% endif %}
+</script>
+{% endblock %}

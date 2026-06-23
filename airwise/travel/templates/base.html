@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}GoTravel{% endblock %}</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+    <script>window.OPENWEATHER_API_KEY = "{{ openweather_api_key|default:'' }}";</script>
+    <style>
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            z-index: 10000;
+            transition: top 0.3s;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .skip-link:focus {
+            top: 0;
+        }
+        .user-greeting {
+            margin-right: 10px;
+            color: var(--secondary);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <header id="header" role="banner">
+        <div class="container header-container">
+            <a href="{% url 'home' %}" class="logo" aria-label="GoTravel Home">Go<span>Travel</span></a>
+            <button class="hamburger" onclick="document.querySelector('nav').classList.toggle('active')" aria-label="Toggle navigation menu" aria-expanded="false">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            <nav role="navigation" aria-label="Main navigation">
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'about' %}">About</a></li>
+                    <li><a href="{% url 'services' %}">Services</a></li>
+                    <li><a href="{% url 'contact' %}">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="header-btns">
+                {% if is_logged_in %}
+                    <span class="user-greeting" aria-label="Logged in as {{ utilisateur.nomComplet }}">
+                        <i class="fas fa-user-circle" aria-hidden="true"></i> {{ utilisateur.nomComplet }}
+                    </span>
+                    <a href="{% url 'deconnexion' %}" class="btn" aria-label="Logout">Logout</a>
+                {% else %}
+                    <a href="{% url 'connection' %}" class="btn">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" role="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer role="contentinfo">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>GoTravel</h3>
+                    <p>Our intelligent flight search system predicts prices based on seasons, weather, and demand trends, helping you never overpay for flights.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h3>Contact</h3>
+                    <div class="footer-contact">
+                        <p><i class="fas fa-map-marker-alt"></i> Makepe Block L, Littoral</p>
+                        <p><i class="fas fa-phone"></i> +237 698 346 744</p>
+                        <p><i class="fas fa-envelope"></i> yasserpaul5@gmail.com</p>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <div class="footer-links">
+                        <a href="{% url 'about' %}">About Us</a>
+                        <a href="{% url 'services' %}">Services</a>
+                        <a href="{% url 'contact' %}">Contact</a>
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h3>Stay Updated</h3>
+                    <p>Subscribe for exclusive deals and travel tips.</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Your email">
+                        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 GoTravel. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        window.addEventListener('scroll', function() {
+            document.getElementById('header').classList.toggle('scrolled', window.scrollY > 50);
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}GoTravel - About Us{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style_about.css' %}">
+{% endblock %}
+
+{% block content %}
+    <section class="page-hero">
+        <div class="container">
+            <h1>About GoTravel</h1>
+            <p>We're on a mission to make flight booking smarter, cheaper, and stress-free.</p>
+        </div>
+    </section>
+
+    <section class="about-section">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-img">
+                    <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Airport">
+                </div>
+                <div class="about-text">
+                    <h2>Our Story</h2>
+                    <p>Founded in 2025, GoTravel was born from a simple frustration: flight prices change constantly, and travelers always wonder if they're paying too much.</p>
+                    <p>Our team of engineers and travel enthusiasts built an AI-powered platform that analyzes millions of data points — seasonal trends, weather patterns, demand shifts, and historical pricing — to predict the optimal time to book your flight.</p>
+                    <p>Today, we help thousands of travelers across Africa and beyond find the best deals, saving them time and money on every trip.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Values</h2>
+                <p>The principles that guide everything we do</p>
+            </div>
+            <div class="values-grid">
+                <div class="value-card">
+                    <i class="fas fa-brain"></i>
+                    <h3>Innovation First</h3>
+                    <p>We leverage cutting-edge AI and machine learning to stay ahead of price fluctuations and deliver accurate predictions.</p>
+                </div>
+                <div class="value-card">
+                    <i class="fas fa-hand-holding-heart"></i>
+                    <h3>Customer Focus</h3>
+                    <p>Every feature we build starts with a question: how does this make travel easier and more affordable for our users?</p>
+                </div>
+                <div class="value-card">
+                    <i class="fas fa-lock"></i>
+                    <h3>Trust & Security</h3>
+                    <p>Your data is protected with industry-standard encryption. We never sell your information to third parties.</p>
+                </div>
+                <div class="value-card">
+                    <i class="fas fa-globe-africa"></i>
+                    <h3>Africa-First</h3>
+                    <p>Built in Cameroon, designed for the world. We prioritize African airports, airlines, and travel patterns.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="team-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Team</h2>
+                <p>The people behind GoTravel</p>
+            </div>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="avatar">Y</div>
+                    <h4>Yasser Paul</h4>
+                    <p>Founder & Lead Developer</p>
+                </div>
+                <div class="team-card">
+                    <div class="avatar">T</div>
+                    <h4>Technical Team</h4>
+                    <p>Engineering & AI</p>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

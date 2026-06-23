@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}GoTravel - Our Services{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style_services.css' %}">
+{% endblock %}
+
+{% block content %}
+    <section class="page-hero">
+        <div class="container">
+            <h1>Our Services</h1>
+            <p>Powerful tools to help you find and book the best flights at the right price.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-search-dollar"></i>
+                    </div>
+                    <div class="service-body">
+                        <h3>AI Price Prediction</h3>
+                        <p>Our machine learning algorithms analyze millions of historical flight data points to predict when prices will rise or fall.</p>
+                        <ul>
+                            <li>Seasonal trend analysis</li>
+                            <li>Demand forecasting</li>
+                            <li>Price alerts and notifications</li>
+                            <li>Best booking time recommendations</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-cloud-sun-rain"></i>
+                    </div>
+                    <div class="service-body">
+                        <h3>Weather Intelligence</h3>
+                        <p>Real-time weather data integrated into our pricing model to give you a complete picture before you book.</p>
+                        <ul>
+                            <li>Destination weather forecasts</li>
+                            <li>Weather-based price adjustments</li>
+                            <li>Travel condition warnings</li>
+                            <li>Seasonal weather patterns</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="service-body">
+                        <h3>Instant Flight Search</h3>
+                        <p>Search hundreds of airlines in real-time powered by the Amadeus API with results in seconds.</p>
+                        <ul>
+                            <li>100+ airlines worldwide</li>
+                            <li>Multiple cabin classes</li>
+                            <li>One-way and round-trip</li>
+                            <li>Passenger and child support</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <div class="service-body">
+                        <h3>Destination Insights</h3>
+                        <p>Comprehensive destination information to help you plan the perfect trip beyond just the flight.</p>
+                        <ul>
+                            <li>Airport guides and codes</li>
+                            <li>Country information</li>
+                            <li>Travel requirements</li>
+                            <li>Local weather conditions</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="service-body">
+                        <h3>Secure Platform</h3>
+                        <p>Your privacy and security are our top priority with industry-standard protection.</p>
+                        <ul>
+                            <li>Encrypted data transmission</li>
+                            <li>Secure user authentication</li>
+                            <li>No data selling policy</li>
+                            <li>Regular security audits</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <div class="service-body">
+                        <h3>24/7 Support</h3>
+                        <p>Our support team is always ready to help you with any questions or issues.</p>
+                        <ul>
+                            <li>Email support</li>
+                            <li>Response within 24 hours</li>
+                            <li>Booking assistance</li>
+                            <li>Technical support</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>How It Works</h2>
+                <p>Find your perfect flight in 3 simple steps</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <h4>Search</h4>
+                    <p>Enter your departure, destination, and travel dates to search available flights.</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <h4>Compare</h4>
+                    <p>View real-time prices alongside our AI predictions to find the best deal.</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <h4>Book</h4>
+                    <p>Choose your preferred flight and complete your booking with confidence.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Find Your Flight?</h2>
+            <p>Start searching now and discover the best deals on flights worldwide.</p>
+            <a href="{% url 'home' %}" class="btn" style="background:white;color:var(--secondary);">
+                <i class="fas fa-search"></i> Search Flights
+            </a>
+        </div>
+    </section>
+{% endblock %}

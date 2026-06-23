@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}GoTravel - Flight Results{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style_search_results.css' %}">
+{% endblock %}
+
+{% block content %}
+    <section class="results-hero">
+        <div class="container">
+            <h1><i class="fas fa-plane-departure"></i> Flight Results</h1>
+            <p>{{ origin }} &rarr; {{ destination }}</p>
+            <div class="results-summary">
+                <span><i class="fas fa-calendar"></i> {{ departure_date }}</span>
+                <span><i class="fas fa-users"></i> {{ passengers }} passenger(s)</span>
+                <span><i class="fas fa-chair"></i> {{ travel_class }}</span>
+                <span><i class="fas fa-list"></i> {{ count }} result(s)</span>
+            </div>
+        </div>
+    </section>
+
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="results-container">
+        {% if flights %}
+            {% for flight in flights %}
+            <div class="flight-card">
+                <div class="flight-card-header">
+                    <div class="airline-info">
+                        <span class="airline-code">{{ flight.airline }}</span>
+                        <span class="airline-name">Flight {{ flight.airline }}</span>
+                    </div>
+                    <div class="flight-price">
+                        <div class="amount">{{ flight.price|floatformat:0 }}</div>
+                        <div class="currency">{{ flight.currency }}</div>
+                    </div>
+                </div>
+
+                <div class="flight-card-body">
+                    {% for seg in flight.outbound %}
+                    <div class="flight-segments">
+                        <div class="segment-point">
+                            <div class="code">{{ seg.from }}</div>
+                            <div class="time">{{ seg.departure|slice:"11:16" }}</div>
+                        </div>
+                        <div class="segment-line">
+                            <div class="line"></div>
+                            <div class="duration">{{ flight.duration_out }}</div>
+                            {% if flight.stops > 0 %}
+                                <div class="stops">{{ flight.stops }} stop(s)</div>
+                            {% else %}
+                                <div class="stops">Direct</div>
+                            {% endif %}
+                        </div>
+                        <div class="segment-point">
+                            <div class="code">{{ seg.to }}</div>
+                            <div class="time">{{ seg.arrival|slice:"11:16" }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    {% if flight.inbound %}
+                    <hr class="flight-divider">
+                    {% for seg in flight.inbound %}
+                    <div class="flight-segments">
+                        <div class="segment-point">
+                            <div class="code">{{ seg.from }}</div>
+                            <div class="time">{{ seg.departure|slice:"11:16" }}</div>
+                        </div>
+                        <div class="segment-line">
+                            <div class="line"></div>
+                            <div class="duration">{{ flight.duration_back }}</div>
+                            {% if flight.stops > 0 %}
+                                <div class="stops">{{ flight.stops }} stop(s)</div>
+                            {% else %}
+                                <div class="stops">Direct</div>
+                            {% endif %}
+                        </div>
+                        <div class="segment-point">
+                            <div class="code">{{ seg.to }}</div>
+                            <div class="time">{{ seg.arrival|slice:"11:16" }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="flight-card-footer">
+                    <div class="flight-meta">
+                        <span><i class="fas fa-plane"></i> {{ flight.travel_class }}</span>
+                        {% if flight.stops > 0 %}
+                        <span><i class="fas fa-exchange-alt"></i> {{ flight.stops }} stop(s)</span>
+                        {% else %}
+                        <span><i class="fas fa-bolt"></i> Direct</span>
+                        {% endif %}
+                    </div>
+                    <form method="post" action="{% url 'reserve_flight' %}" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="flight_id" value="{{ flight.id }}">
+                        <input type="hidden" name="flight_price" value="{{ flight.price }}">
+                        <input type="hidden" name="origin" value="{{ origin }}">
+                        <input type="hidden" name="destination" value="{{ destination }}">
+                        <input type="hidden" name="departure_date" value="{{ departure_date }}">
+                        <button type="submit" class="btn-reserve">
+                            <i class="fas fa-ticket-alt"></i> Book Now
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-results">
+                <i class="fas fa-plane-slash"></i>
+                <h2>No flights found</h2>
+                <p>We couldn't find any flights matching your search. Try different dates or airports.</p>
+                <a href="{% url 'home' %}#booking" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Search again
+                </a>
+            </div>
+        {% endif %}
+
+        <div style="text-align:center;margin-top:20px;">
+            <a href="{% url 'home' %}#booking" class="back-link">
+                <i class="fas fa-arrow-left"></i> New search
+            </a>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,86 @@
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 80px 0;
+}
+.service-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    transition: transform 0.3s;
+}
+.service-card:hover { transform: translateY(-5px); }
+.service-icon {
+    background: var(--primary);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+.service-icon i { font-size: 3rem; }
+.service-body {
+    padding: 30px;
+}
+.service-body h3 { font-size: 1.2rem; margin-bottom: 12px; }
+.service-body p { color: #666; line-height: 1.7; margin-bottom: 15px; }
+.service-body ul {
+    list-style: none;
+    padding: 0;
+}
+.service-body ul li {
+    padding: 6px 0;
+    color: #555;
+    font-size: 0.9rem;
+}
+.service-body ul li::before {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: var(--primary);
+    margin-right: 10px;
+}
+
+.how-it-works {
+    padding: 60px 0 80px;
+    background: var(--light);
+}
+.steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+.step {
+    text-align: center;
+    position: relative;
+}
+.step-num {
+    width: 60px; height: 60px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 auto 15px;
+    font-family: 'Playfair Display', serif;
+}
+.step h4 { margin-bottom: 8px; }
+.step p { color: #888; font-size: 0.9rem; }
+
+.cta-section {
+    padding: 80px 0;
+    text-align: center;
+    background: var(--secondary);
+    color: white;
+}
+.cta-section h2 { color: white; font-size: 2rem; margin-bottom: 15px; }
+.cta-section p { opacity: 0.8; margin-bottom: 30px; max-width: 500px; margin-left: auto; margin-right: auto; }
+
+@media (max-width: 768px) {
+    .page-hero h1 { font-size: 2rem; }
+}
