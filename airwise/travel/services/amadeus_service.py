@@ -4,9 +4,7 @@ import time
 from typing import Any, Optional
 
 import requests
-from dotenv import load_dotenv
-
-load_dotenv()
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -14,11 +12,10 @@ logger = logging.getLogger(__name__)
 class AmadeusService:
     """Service for interacting with the Amadeus flight search API."""
 
-    BASE_URL = "https://test.api.amadeus.com"
-
-    def __init__(self):
-        self.api_key: Optional[str] = os.getenv('AMADEUS_API_KEY')
-        self.api_secret: Optional[str] = os.getenv('AMADEUS_API_SECRET')
+    def __init__(self, api_key: Optional[str] = None, api_secret: Optional[str] = None):
+        self.api_key = api_key or settings.AMADEUS_API_KEY
+        self.api_secret = api_secret or settings.AMADEUS_API_SECRET
+        self.base_url = settings.AMADEUS_BASE_URL.rstrip('/')
         self.token: Optional[str] = None
         self.token_expiry: Optional[float] = None
 
@@ -27,7 +24,7 @@ class AmadeusService:
         if self.token and self.token_expiry and self.token_expiry > time.time():
             return self.token
 
-        url = f"{self.BASE_URL}/v1/security/oauth2/token"
+        url = f"{self.base_url}/v1/security/oauth2/token"
         data = {
             'grant_type': 'client_credentials',
             'client_id': self.api_key,
@@ -83,7 +80,7 @@ class AmadeusService:
         origin_code = self.extract_iata(origin)
         dest_code = self.extract_iata(destination)
 
-        url = f"{self.BASE_URL}/v2/shopping/flight-offers"
+        url = f"{self.base_url}/v2/shopping/flight-offers"
         params = {
             'originLocationCode': origin_code,
             'destinationLocationCode': dest_code,

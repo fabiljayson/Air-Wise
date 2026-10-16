@@ -1,12 +1,15 @@
 import json
 import logging
 
+from django import forms
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password, check_password
 from django.core.paginator import Paginator, EmptyPage
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 
 from .decorators import connexion_requise
 from .forms import LoginForm, RegisterForm, FlightSearchForm
@@ -223,10 +226,13 @@ def search_flights(request):
     return render(request, 'search_results.html', ctx)
 
 
+@csrf_exempt
+@require_http_methods(["POST"])
 def search_flights_ajax(request):
-    if request.method != 'POST':
-        return JsonResponse({'error': 'POST required'}, status=405)
+    """Public AJAX flight-search endpoint.
 
+    Stateless (no session mutation, no auth required), so it is CSRF-exempt.
+    """
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError:
@@ -242,13 +248,19 @@ def search_flights_ajax(request):
     if not origin or not destination or not departure_date:
         return JsonResponse({'error': 'Missing required fields'}, status=400)
 
+    try:
+        passengers = max(int(passengers), 1)
+        children = max(int(children), 0)
+    except (TypeError, ValueError):
+        return JsonResponse({'error': 'Invalid passenger/child count'}, status=400)
+
     amadeus = AmadeusService()
     result = amadeus.search_flights(
         origin=origin,
         destination=destination,
         departure_date=departure_date,
-        adults=max(int(passengers), 1),
-        children=int(children),
+        adults=passengers,
+        children=children,
         travel_class=travel_class,
     )
 
@@ -269,22 +281,41 @@ def reserve_flight(request):
     destination = request.POST.get('destination', '')
     departure_date = request.POST.get('departure_date', '')
 
+    if not flight_id or not origin or not destination or not departure_date:
+        messages.error(request, 'Missing reservation details. Please try again.')
+        return redirect('home')
+
+    try:
+        price = float(flight_price)
+    except (TypeError, ValueError):
+        price = 0.0
+    # Reject absurd prices defensively.
+    if price < 0 or price > 1_000_000:
+        messages.error(request, 'Invalid flight price.')
+        return redirect('home')
+
     utilisateur = getattr(request, 'utilisateur', None)
     if not utilisateur:
         messages.error(request, 'Please log in to make a reservation.')
         return redirect('connection')
 
-    user_instance = utilisateur._user if hasattr(utilisateur, '_user') else utilisateur
+    user_instance = getattr(utilisateur, '_user', None) or utilisateur
 
-    Reservation.objects.create(
-        utilisateur=user_instance,
-        flight_id=flight_id,
-        origin=origin,
-        destination=destination,
-        departure_date=departure_date,
-        price=float(flight_price) if flight_price else 0,
-        statut='Confirmed',
-    )
-    logger.info('Reservation created by %s: %s to %s', utilisateur.email, origin, destination)
-    messages.success(request, f'Reservation confirmed! Flight {origin} to {destination} on {departure_date} for {flight_price} EUR.')
+    try:
+        Reservation.objects.create(
+            utilisateur=user_instance,
+            flight_id=flight_id,
+            origin=origin,
+            destination=destination,
+            departure_date=departure_date,
+            price=price,
+            statut='Confirmed',
+        )
+    except Exception as e:  # noqa: BLE001 - surface any DB error to the user
+        logger.error('Reservation creation failed for %s: %s', user_instance.email, e)
+        messages.error(request, 'Could not create your reservation. Please try again.')
+        return redirect('home')
+
+    logger.info('Reservation created by %s: %s to %s', user_instance.email, origin, destination)
+    messages.success(request, f'Reservation confirmed! Flight {origin} to {destination} on {departure_date} for {price:.2f} EUR.')
     return redirect('home')

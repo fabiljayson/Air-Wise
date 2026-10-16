@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import warnings
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -19,9 +20,30 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-change-this-in-production')
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'django-insecure-default-for-development-only'
+        warnings.warn(
+            'DJANGO_SECRET_KEY is not set. Using a default development key. '
+            'Set DJANGO_SECRET_KEY in production.',
+            RuntimeWarning,
+            stacklevel=2,
+        )
+    else:
+        raise RuntimeError(
+            'DJANGO_SECRET_KEY must be set in the environment when DEBUG is False.'
+        )
+
+ALLOWED_HOSTS_env = os.getenv('ALLOWED_HOSTS', '')
+if DEBUG and not ALLOWED_HOSTS_env:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.local', '.test']
+else:
+    ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS_env.split(',') if h.strip()]
+    if not ALLOWED_HOSTS:
+        raise RuntimeError('ALLOWED_HOSTS must be set in production.')
 
 
 # Application definition
@@ -90,6 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 8},
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -117,24 +140,48 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'travel', 'static'),
-]
+] if (BASE_DIR / 'travel' / 'static').is_dir() else []
+
+# Media files (user uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# --- Security hardening ---
+# https://docs.djangoproject.com/en/5.2/topics/security/
+
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_TRUSTED_ORIGINS = [
+    o.strip() for o in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()
+]
+
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_AGE = int(os.getenv('SESSION_COOKIE_AGE', '1209600'))  # 14 days
 
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
+
+# HSTS / SSL redirect are only meaningful behind HTTPS; enable when configured.
+SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'False').lower() in ('true', '1', 'yes')
+SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '3600'))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = os.getenv('SECURE_HSTS_INCLUDE_SUBDOMAINS', 'False').lower() in ('true', '1', 'yes')
+SECURE_HSTS_PRELOAD = os.getenv('SECURE_HSTS_PRELOAD', 'False').lower() in ('true', '1', 'yes')
+
+# Rate limiting / throttling
+RATE_LIMIT_ENABLE = os.getenv('RATE_LIMIT_ENABLE', 'True').lower() in ('true', '1', 'yes')
 
 LOGGING = {
     'version': 1,
@@ -154,7 +201,7 @@ LOGGING = {
     'loggers': {
         'travel': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': os.getenv('LOG_LEVEL', 'INFO'),
             'propagate': True,
         },
     },
@@ -166,3 +213,10 @@ CACHES = {
         'LOCATION': 'airwise-rate-limit',
     }
 }
+
+# --- External service configuration ---
+AMADEUS_API_KEY = os.getenv('AMADEUS_API_KEY', '')
+AMADEUS_API_SECRET = os.getenv('AMADEUS_API_SECRET', '')
+AMADEUS_BASE_URL = os.getenv('AMADEUS_BASE_URL', 'https://test.api.amadeus.com')
+
+OPENWEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY', '')
