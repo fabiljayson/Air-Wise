@@ -1,29 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoTravel - Page Not Found</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #f8f5f0; color: #34495e; }
-        .error-page { text-align: center; padding: 40px; }
-        .error-code { font-size: 8rem; font-weight: 700; color: #c19b76; line-height: 1; }
-        .error-title { font-size: 1.8rem; margin: 20px 0 10px; color: #14212c; }
-        .error-msg { color: #888; margin-bottom: 30px; font-size: 1.1rem; }
-        .error-btn { display: inline-block; padding: 12px 30px; background: #c19b76; color: white; text-decoration: none; border-radius: 6px; font-weight: 500; transition: background 0.3s; }
-        .error-btn:hover { background: #b08a65; }
-    </style>
-</head>
-<body>
-    <div class="error-page">
-        <div class="error-code">404</div>
-        <h1 class="error-title">Page Not Found</h1>
-        <p class="error-msg">The page you're looking for doesn't exist or has been moved.</p>
-        <a href="{% url 'home' %}" class="error-btn"><i class="fas fa-home"></i> Back to Home</a>
-    </div>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}GoTravel - Page Not Found{% endblock %}
+
+{% block extra_css %}
+<style>
+    .error-page {
+        text-align: center;
+        padding: var(--space-xxl);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .error-code {
+        font-family: var(--font-family-display);
+        font-size: 8rem;
+        font-weight: 700;
+        color: var(--color-primary);
+        line-height: 1;
+    }
+    .error-title {
+        font-size: 1.8rem;
+        margin: var(--space-lg) 0 var(--space-sm);
+        color: var(--color-primary-strong);
+    }
+    .error-msg {
+        color: var(--color-primary);
+        margin-bottom: var(--space-xxl);
+        font-size: 1.1rem;
+    }
+    .error-btn {
+        display: inline-block;
+        padding: var(--space-md) var(--space-xxl);
+        background: var(--color-primary);
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: var(--radius-md);
+        font-weight: var(--font-weight-default);
+        transition: background var(--motion-normal), transform var(--motion-normal), box-shadow var(--motion-normal);
+    }
+    .error-btn:hover {
+        background: var(--color-primary-strong);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-depth);
+    }
+    .error-btn:focus-visible {
+        outline: 3px solid var(--color-primary);
+        outline-offset: 2px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <div class="error-code">404</div>
+    <h1 class="error-title">Page Not Found</h1>
+    <p class="error-msg">The page you're looking for doesn't exist or has been moved.</p>
+    <a href="{% url 'home' %}" class="error-btn"><i class="fas fa-home"></i> Back to Home</a>
+</div>
+{% endblock %}

@@ -1,86 +1,165 @@
+/* Services page — floating feature panels over a calm stage. */
+
 .services-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    padding: 80px 0;
+    gap: var(--space-xl);
+    padding: var(--space-section) 0;
 }
+
 .service-card {
-    background: white;
-    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-    transition: transform 0.3s;
+    box-shadow: var(--shadow-soft);
+    transition: transform var(--motion-normal), box-shadow var(--motion-normal), border-color var(--motion-normal);
 }
-.service-card:hover { transform: translateY(-5px); }
+
+.service-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-panel);
+    border-color: var(--color-primary-soft);
+}
+
 .service-icon {
-    background: var(--primary);
-    color: white;
-    padding: 30px;
+    background: var(--color-primary-strong);
+    color: #ffffff;
+    padding: var(--space-xl);
     text-align: center;
 }
-.service-icon i { font-size: 3rem; }
-.service-body {
-    padding: 30px;
+
+.service-icon i {
+    font-size: 2.5rem;
 }
-.service-body h3 { font-size: 1.2rem; margin-bottom: 12px; }
-.service-body p { color: #666; line-height: 1.7; margin-bottom: 15px; }
+
+.service-body {
+    padding: var(--space-xl);
+}
+
+.service-body h3 {
+    font-size: 1.2rem;
+    margin-bottom: var(--space-md);
+}
+
+.service-body p {
+    color: var(--color-primary);
+    line-height: 1.7;
+    margin-bottom: var(--space-lg);
+}
+
 .service-body ul {
     list-style: none;
     padding: 0;
 }
+
 .service-body ul li {
-    padding: 6px 0;
-    color: #555;
-    font-size: 0.9rem;
+    padding: var(--space-xs) 0;
+    color: var(--color-primary);
+    font-size: 0.95rem;
 }
+
 .service-body ul li::before {
-    content: '\f00c';
-    font-family: 'Font Awesome 6 Free';
+    content: "\f00c";
+    font-family: "Font Awesome 6 Free";
     font-weight: 900;
-    color: var(--primary);
-    margin-right: 10px;
+    color: var(--color-primary);
+    margin-right: var(--space-sm);
 }
 
 .how-it-works {
-    padding: 60px 0 80px;
-    background: var(--light);
+    padding: var(--space-section) 0;
+    background: var(--color-surface-muted);
 }
+
 .steps {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 30px;
+    gap: var(--space-xl);
     max-width: 900px;
     margin: 0 auto;
 }
+
 .step {
     text-align: center;
     position: relative;
 }
+
 .step-num {
-    width: 60px; height: 60px;
-    background: var(--primary);
-    color: white;
+    width: 60px;
+    height: 60px;
+    background: var(--color-primary-strong);
+    color: #ffffff;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
     font-weight: 700;
-    margin: 0 auto 15px;
-    font-family: 'Playfair Display', serif;
+    margin: 0 auto var(--space-lg);
+    font-family: var(--font-family-display);
+    box-shadow: var(--shadow-depth);
 }
-.step h4 { margin-bottom: 8px; }
-.step p { color: #888; font-size: 0.9rem; }
+
+.step h4 {
+    margin-bottom: var(--space-sm);
+}
+
+.step p {
+    color: var(--color-primary);
+    font-size: 0.95rem;
+}
 
 .cta-section {
-    padding: 80px 0;
+    position: relative;
+    padding: var(--space-section) 0;
     text-align: center;
-    background: var(--secondary);
-    color: white;
+    background: var(--color-primary-strong);
+    color: #ffffff;
+    overflow: hidden;
 }
-.cta-section h2 { color: white; font-size: 2rem; margin-bottom: 15px; }
-.cta-section p { opacity: 0.8; margin-bottom: 30px; max-width: 500px; margin-left: auto; margin-right: auto; }
+
+.cta-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(640px 320px at 50% 0%, rgba(203, 213, 225, 0.18), transparent 60%);
+    pointer-events: none;
+}
+
+.cta-section .container {
+    position: relative;
+    z-index: 1;
+}
+
+.cta-section h2 {
+    color: #ffffff;
+    font-size: 2rem;
+    margin-bottom: var(--space-md);
+}
+
+.cta-section p {
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: var(--space-xl);
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cta-section .btn {
+    background: #ffffff;
+    border-color: #ffffff;
+    color: var(--color-primary-strong);
+}
+
+.cta-section .btn:hover {
+    background: var(--color-primary-soft);
+    border-color: var(--color-primary-soft);
+    color: var(--color-primary-strong);
+}
 
 @media (max-width: 768px) {
-    .page-hero h1 { font-size: 2rem; }
+    .services-grid {
+        padding: var(--space-xl) 0;
+    }
 }
