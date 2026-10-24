@@ -1,5 +1,7 @@
 # Air-Wise
 
+[![CI](https://github.com/fabiljayson/Air-Wise/actions/workflows/ci.yml/badge.svg)](https://github.com/fabiljayson/Air-Wise/actions/workflows/ci.yml)
+
 Air-Wise is an AI-powered flight search and price-prediction web application. It combines real-time flight data from the Amadeus API with OpenWeather weather intelligence to help travelers find the best flight deals and predict the optimal time to book.
 
 Built with Django 5.2 and a clean, responsive front-end.
